@@ -21,8 +21,9 @@
       :name="open ? 'heroicons:chevron-down' : 'heroicons:chevron-right'"
       class="w-4 h-4 transition-transform duration-150"
     />
-    <Icon :name="iconName" class="w-4 h-4" />
-    <span class="truncate">{{ node.name }}</span>
+    <div class="flex items-center gap-2 truncate"><Icon :name="iconName" class="w-4 h-4" />
+    <span class="truncate">{{ node.name }}</span></div>
+    
     <span v-if="loading" class="ml-2 animate-pulse text-xs text-gray-400">Loading...</span>
   </button>
 
@@ -37,8 +38,11 @@
     'bg-blue-100': activePath.startsWith(node.path + '/')
   }"
   >
+  <div class="flex items-center gap-2 pb-2  truncate">
     <Icon :name="iconName" class="w-4 h-4" />
     <span class="truncate">{{ node.name }}</span>
+  </div>
+    
   </div>
 </div>
 
