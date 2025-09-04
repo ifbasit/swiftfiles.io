@@ -90,54 +90,22 @@ const isActive = computed(() => {
   return match && (!isFolder.value || open.value)
 })
 
-// icon map
-const iconMap = {
-  folder: 'heroicons:folder',
-  code: 'heroicons:code-bracket',
-  image: 'heroicons:photo',
-  audio: 'heroicons:musical-note',
-  video: 'heroicons:play',
-  text: 'heroicons:document-text',
-  data: 'heroicons:document',
-  json: 'heroicons:document',
-  archive: 'heroicons:archive-box',
-  pdf: 'heroicons:document',
-  presentation: 'heroicons:document',
-  spreadsheet: 'heroicons:table-cells',
-  config: 'heroicons:cog-6-tooth',
-  markdown: 'heroicons:document-text',
-  default: 'heroicons:document',
-  db: 'heroicons:circle-stack',
-  terminal: 'heroicons:command-line'
-}
-
-const codeExtensions = ['vue','html','js','css','php','json','xml']
-const dataExtensions = ['csv','xls']
-const terminalExtensions = ['sh']
-const dbExtensions = ['sql','db','sqlite','mdb','accdb','tsv','yaml','yml','plist']
-const imageExtensions = ['png','jpg','jpeg','gif','svg','webp','bmp','ico','tiff','heic','avif']
-const audioExtensions = ['mp3','wav','ogg','flac','aac','m4a','wma']
-const videoExtensions = ['mp4','mov','avi','mkv']
-const textExtensions = ['txt','md','log']
-const archiveExtensions = ['zip','rar','7z','tar','gz','bz2','xz','iso']
-
 const iconName = computed(() => {
-  if (props.node.type === 'folder') return iconMap.folder
+  if (props.node.type === 'folder') return 'heroicons:folder'
 
   const ext = (props.node.name || '').split('.').pop()?.toLowerCase()
+  if (!ext) return 'heroicons:document'
 
-  if (codeExtensions.includes(ext)) return iconMap.code
-  if (imageExtensions.includes(ext)) return iconMap.image
-  if (audioExtensions.includes(ext)) return iconMap.audio
-  if (videoExtensions.includes(ext)) return iconMap.video
-  if (textExtensions.includes(ext)) return iconMap.text
-  if (dbExtensions.includes(ext)) return iconMap.db
-  if (archiveExtensions.includes(ext)) return iconMap.archive
-  if (dataExtensions.includes(ext)) return iconMap.spreadsheet
-  if (terminalExtensions.includes(ext)) return iconMap.terminal
+  for (const group of app.extensions) {
+    const key = Object.keys(group).find(k => k !== 'icon')
+    if (key && group[key].includes(ext)) {
+      return group.icon
+    }
+  }
 
-  return iconMap[props.node.fileType] || iconMap.default
+  return 'heroicons:document'
 })
+
 
 // full path comes from server
 function buildPath() {
