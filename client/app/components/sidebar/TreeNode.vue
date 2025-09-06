@@ -112,20 +112,20 @@ function buildPath() {
   return props.node.path
 }
 
-async function loadChildren() {
+async function loadChildren(path) {
   if (children.value !== null) return
   loading.value = true
   try {
-    const fullPath = buildPath()
+   
     const res = await axios.get(app.endpoint, {
-      params: { request: 'tree', path: fullPath }
+      params: { request: 'tree', path: path }
     })
     let items = []
     if (Array.isArray(res.data)) items = res.data
     else if (res.data && res.data.items) items = res.data.items
 
     children.value = items
-    emit('toggle-load', { path: fullPath, items })
+    emit('toggle-load', { path: path, items })
   } catch (err) {
     console.error('Error loading children for', props.node.name, err)
     children.value = []
@@ -135,18 +135,35 @@ async function loadChildren() {
 }
 
 async function onToggle() {
+  const folder = props.node.type === 'folder'
   open.value = !open.value
 
+  if(folder){
+      try {
+   
+      const res = await axios.get(app.endpoint, {
+        params: { request: 'tree', path: props.node.path }
+      })
+      console.log(res.data)
+      } catch (err) {
+      console.error('Error loading children for', props.node.name, err)
+      children.value = []
+    } finally {
+      loading.value = false
+    }
+  }
+
   if (open.value) {
-    await loadChildren()
-    emit('set-active', props.node.path)
+     const fullPath = buildPath()
+    await loadChildren(fullPath)
+    emit('set-active', props.node.path, folder)
   } else if (props.activePath === props.node.path) {
     let parts = props.node.path.split('/').filter(Boolean)
     parts.pop()
     let parentPath = '/' + parts.join('/')
     if (parentPath === '') parentPath = '/'
     console.log('collapse → set-active:', parentPath)
-    emit('set-active', parentPath)
+    emit('set-active', parentPath, folder)
   }
 
 }
