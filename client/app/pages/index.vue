@@ -17,9 +17,22 @@
         <listings />
       </div>
     </div>
+    <Toast
+    v-if="app.toast.state"
+    :message="app.toast.message"
+    :type="app.toast.type"
+    :duration="app.toast.duration"
+  />
+
+
+    
+
   </div>
 </template>
 
 <script setup>
+import Toast from '~/components/ui/Toast.vue';
+import { app } from '~/store/app';
+
 
 </script>
