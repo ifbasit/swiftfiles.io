@@ -18,12 +18,10 @@
   <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
     <!-- make user the root TreeNode -->
     <TreeNode
-      v-if="!app.sidebar.is_loading && app.user"
-      :node="{ name: app.user, type: 'folder', path: '/', children: app.folders }"
-      :active-path="activePath"
-      
-      @set-active="(path, type) => setActive(path, type)"
-    />
+  v-if="!app.sidebar.is_loading && app.user"
+  :node="app.sidebar.root"
+/>
+
 
     <ul v-else-if="app.sidebar.is_loading" class="ml-4 mt-2 space-y-1">
       <li><span class="ml-2 animate-pulse text-xs text-gray-400">Loading...</span></li>
@@ -121,20 +119,20 @@
 
 
 <script setup>
-import { reactive, ref, onMounted } from "vue"
+import { onMounted } from "vue"
 import { app } from '~/store/app.js'
 import TreeNode from '~/components/sidebar/TreeNode.vue'
 import logoLight from '~/assets/images/swiftfilesio-light.png'
 import logoDark from '~/assets/images/swiftfilesio-dark.png'
-const activePath = ref('')
-function setActive(path, folder) {
-  activePath.value = path
-}
-
 
 onMounted (async () => {
-  // load user and sidebar folders 
   app.user = await app.request.get({ request: 'user' }).then(r => r?.current_user).catch(() => null)
+
+  // ensure root references the reactive folders array
+  app.sidebar.root.name = app.user
+  app.sidebar.root.children = app.sidebar.folders
+
+  // load folders from server
   app.sidebar.load_folders()
 })
 </script>
