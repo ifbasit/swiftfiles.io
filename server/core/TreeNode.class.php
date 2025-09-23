@@ -91,7 +91,8 @@ class TreeNode {
                     if (!$isDir) {
                         $size = @filesize($fullPath); // @ suppresses warnings
                     }
-                    $lastModified = @date("Y-m-d H:i:s", filemtime($fullPath));
+                    $lastModified = @date("jS F Y, gA", filemtime($fullPath));
+
                     $perms = @fileperms($fullPath);
                     $permissions = $this->formatPermissions($perms);
                 }

@@ -134,5 +134,6 @@ onMounted (async () => {
 
   // load folders from server
   app.sidebar.load_folders()
+  console.log(app.sidebar.folders)
 })
 </script>

@@ -4,6 +4,7 @@ import axios from "axios"
 const app = reactive({
   endpoint: 'http://localhost:8888/swiftfilesio/server/',
   darkmode: false,
+
   toast: {
     state: false,
     message: null,
@@ -50,16 +51,15 @@ const app = reactive({
 
       app.sidebar.is_loading = false
     },
-
-    activePath: "",
-    setActive(path) {
-      app.sidebar.activePath = path
+    active_path: '',
+    set_active_path: (path) => {
+      app.sidebar.active_path = path
     }
   },
 
   // Treenode logic — PER NODE state (no global open/loading/children)
   treenode: {
-    iconName(node) {
+    icon(node) {
       if (node.type === "folder") return "heroicons:folder"
       const ext = (node.name || "").split('.').pop()?.toLowerCase()
       if (!ext) return "heroicons:document"
@@ -74,7 +74,7 @@ const app = reactive({
     },
 
     // load children for a specific node (attaches node.children)
-    async loadChildren(node) {
+    async load_children(node) {
       // if server already gave children, don't re-load
       if (node.children != null) return
       node._loading = true
@@ -96,30 +96,30 @@ const app = reactive({
     },
 
     // toggle per-node open state
-    async onToggle(node) {
+    async toggle(node) {
       if (node.type !== 'folder') return
 
       // toggle this node only
       node._open = !node._open
 
       if (node._open) {
-        await app.treenode.loadChildren(node)
-        app.sidebar.setActive(node.path)
+        await app.treenode.load_children(node)
+        app.sidebar.set_active_path(node.path)
       } else {
         // if closing and it was active, set active to parent
-        if (app.sidebar.activePath === node.path) {
+        if (app.sidebar.active_path === node.path) {
           const parts = node.path.split('/').filter(Boolean)
           parts.pop()
           let parentPath = '/' + parts.join('/')
           if (parentPath === '') parentPath = '/'
-          app.sidebar.setActive(parentPath)
+          app.sidebar.set_active_path(parentPath)
         }
       }
     },
 
     // active check uses node._open (per node)
-    isActive(node) {
-      const match = app.sidebar.activePath === node.path
+    is_active(node) {
+      const match = app.sidebar.active_path === node.path
       const folder = node.type === "folder"
       return match && (!folder || node._open)
     }
@@ -141,7 +141,7 @@ const app = reactive({
         app.set_toast({
           state: true,
           message: err.message,
-          type: 'error',
+          type: 'success',
           duration: 4000
         })
         console.error("Error fetching", err)
