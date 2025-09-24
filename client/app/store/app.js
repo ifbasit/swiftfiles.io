@@ -55,7 +55,6 @@ const app = reactive({
     active_path: '',
     set_active_path: (path) => {
       app.sidebar.active_path = path
-      app.set_history({ path: path, state: 'current' })
     }
   },
 
