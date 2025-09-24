@@ -11,7 +11,7 @@ const app = reactive({
     message: null,
     duration: 0,
     type: null
-  },
+  }, 
   clear_toast: () => {
     app.set_toast({
       state: false,
@@ -28,6 +28,47 @@ const app = reactive({
     app.toast.type = type;
   },
  
+  listings: {
+    view: 'list',
+    selected: [],
+    toggle_select: (file) => {
+      let selected = app.listings.selected;
+       if (selected.includes(file.name)) {
+        selected = selected.filter(f => f !== file.name);
+      } else {
+        selected.push(file.name);
+      }
+    },
+    select_all: () => {
+      app.listings.selected = app.sidebar.folders.map(f => f.name);
+    },
+    unselect_all: () => {
+      app.listings.selected = [];
+    },
+    toolbar_buttons: computed(() => { return [
+        { label: "Home", icon: "heroicons:home", action: () => {}, disabled: false },
+        { label: "Back", icon: "heroicons:arrow-left", action: () => { console.log(app.navigation.back()) }, disabled: false },
+        { label: "Forward", icon: "heroicons:arrow-right", action: () => { console.log(app.navigation.forward()) }, disabled: false },
+        { label: "Refresh", icon: "heroicons:arrow-path", action: () => {}, disabled: false },
+        { label: "Select All", icon: "heroicons:check", action: app.listings.select_all, disabled: false },
+        { label: "Unselect All", icon: "heroicons:x-mark", action: app.listings.unselect_all, disabled: app.listings.selected.length === 0 },
+      ]
+    }),
+    btn_class: (disabled) => {
+      return `p-2 rounded-md transition ${
+          disabled
+            ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
+            : "text-gray-600 dark:text-gray-300 hover:text-blue-500"
+        }`;
+    },
+    toggle_btn_class: (active) => {
+      return `p-2 rounded-md transition ${
+        active
+          ? "text-blue-500  dark:text-white"
+          : "text-gray-500 hover:text-blue-500"
+      }`;
+    }
+  },
 
   // Sidebar
   sidebar: {
@@ -55,6 +96,8 @@ const app = reactive({
     active_path: '',
     set_active_path: (path) => {
       app.sidebar.active_path = path
+
+      // console.log(app.history)
     }
   },
 
@@ -77,7 +120,13 @@ const app = reactive({
     // load children for a specific node (attaches node.children)
     async load_children(node) {
       // if server already gave children, don't re-load
-      if (node.children != null) return
+      if (node.children != null) {
+        console.log(app.sidebar.folders)
+        console.log(node.children)
+        app.sidebar.folders = node.children
+        console.log('don not reload')
+        return
+      }
       node._loading = true
       try {
         const res = await app.request.get({ request: 'tree', path: node.path })
@@ -88,6 +137,7 @@ const app = reactive({
 
         // attach children to the node
         node.children = items
+        app.sidebar.folders = items
       } catch (err) {
         console.error("Error loading children for", node.path, err)
         node.children = []
@@ -111,6 +161,7 @@ const app = reactive({
         }
         app.sidebar.set_active_path(path)
       } else {
+        await app.treenode.load_children(node)
         if (app.sidebar.active_path === node.path) {
           const parts = node.path.split('/').filter(Boolean)
           parts.pop()
@@ -122,6 +173,7 @@ const app = reactive({
           app.sidebar.set_active_path(parentPath)
         }
       }
+
     },
 
     // active check uses node._open (per node)
@@ -133,9 +185,26 @@ const app = reactive({
   },
 
   helper: {
+    the_ids: new Set(),
     toggle_dark_mode: () => {
       app.darkmode = !app.darkmode
       document.documentElement.classList.toggle("dark", app.darkmode)
+    },
+    get_timestamp: () => {
+      return Date.now();
+    },
+    uniqid: () => {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let id;
+      do {
+        id = '';
+        for (let i = 0; i < 8; i++) {
+          id += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+      } while (app.helper.the_ids.has(id));
+
+      app.helper.the_ids.add(id);
+      return id;
     }
   },
 

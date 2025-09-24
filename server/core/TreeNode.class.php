@@ -89,26 +89,41 @@ class TreeNode {
 
                 if (file_exists($fullPath) && is_readable($fullPath)) {
                     if (!$isDir) {
-                        $size = @filesize($fullPath); // @ suppresses warnings
+                        $bytes = @filesize($fullPath); // @ suppresses warnings
+                        $size  = $this->format_file_size($bytes);
                     }
                     $lastModified = @date("jS F Y, gA", filemtime($fullPath));
-
+ 
                     $perms = @fileperms($fullPath);
                     $permissions = $this->formatPermissions($perms);
                 }
 
                 $result[] = [
-                    'name'        => $item,
-                    'type'        => $isDir ? 'folder' : 'file',
-                    'path'        => $fullPath,
-                    'fileType'    => $isDir ? null : pathinfo($item, PATHINFO_EXTENSION),
-                    'size'        => $size,
-                    'lastModified'=> $lastModified,
-                    'permissions' => $permissions
+                    'name'          => $item,
+                    'type'          => $isDir ? 'folder' : 'file',
+                    'path'          => $fullPath,
+                    'file_type'     => $isDir ? null : pathinfo($item, PATHINFO_EXTENSION),
+                    'size'          => $size,
+                    'last_modified' => $lastModified,
+                    'permissions'   => $permissions
                 ];
             }
 
             return $result;
+        }
+
+        private function format_file_size($bytes) {
+            if ($bytes < 1024) {
+                return $bytes . ' B';
+            } elseif ($bytes < 1048576) { // < 1 MB
+                return round($bytes / 1024, 2) . ' KB';
+            } elseif ($bytes < 1073741824) { // < 1 GB
+                return round($bytes / 1048576, 2) . ' MB';
+            } elseif ($bytes < 1099511627776) { // < 1 TB
+                return round($bytes / 1073741824, 2) . ' GB';
+            } else {
+                return round($bytes / 1099511627776, 2) . ' TB';
+            }
         }
 
 

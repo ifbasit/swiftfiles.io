@@ -119,8 +119,6 @@
 
 
 <script setup>
-import { watch } from "vue"
-
 import { onMounted } from "vue"
 import { app } from '~/store/app.js'
 import TreeNode from '~/components/sidebar/TreeNode.vue'
@@ -137,7 +135,6 @@ onMounted (async () => {
   // load folders from server
   app.sidebar.load_folders()
  
-  // console.log(app.sidebar.folders)
 })
 
 </script>

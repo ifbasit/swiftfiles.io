@@ -33,7 +33,7 @@
       <!-- file -->
       <div
         v-else
-        @click="app.sidebar.set_active_path(node.path); "
+        @click="app.sidebar.set_active_path(node.path);"
         :class="{
           'bg-blue-500 text-white': app.sidebar.active_path === node.path,
           'bg-blue-100': app.sidebar.active_path && app.sidebar.active_path.startsWith(node.path + '/')
