@@ -1,10 +1,11 @@
 import { reactive } from "vue"
 import axios from "axios"
 
+
 const app = reactive({
   endpoint: 'http://localhost:8888/swiftfilesio/server/',
   darkmode: false,
-
+  user: null,
   toast: {
     state: false,
     message: null,
@@ -26,7 +27,7 @@ const app = reactive({
     app.toast.duration = duration;
     app.toast.type = type;
   },
-  user: null,
+ 
 
   // Sidebar
   sidebar: {
@@ -54,6 +55,7 @@ const app = reactive({
     active_path: '',
     set_active_path: (path) => {
       app.sidebar.active_path = path
+      app.set_history({ path: path, state: 'current' })
     }
   },
 
@@ -99,19 +101,25 @@ const app = reactive({
     async toggle(node) {
       if (node.type !== 'folder') return
 
-      // toggle this node only
       node._open = !node._open
 
       if (node._open) {
         await app.treenode.load_children(node)
-        app.sidebar.set_active_path(node.path)
+        let path = node.path
+        const parts = path.split('/').filter(Boolean)
+        if (parts.length === 1 && path.startsWith('/')) {
+          path = '//' + parts[0]
+        }
+        app.sidebar.set_active_path(path)
       } else {
-        // if closing and it was active, set active to parent
         if (app.sidebar.active_path === node.path) {
           const parts = node.path.split('/').filter(Boolean)
           parts.pop()
           let parentPath = '/' + parts.join('/')
           if (parentPath === '') parentPath = '/'
+          if (parentPath.split('/').filter(Boolean).length === 1) {
+            parentPath = '//' + parentPath.replace('/', '')
+          }
           app.sidebar.set_active_path(parentPath)
         }
       }
@@ -161,5 +169,7 @@ const app = reactive({
     { archive: ['zip','rar','7z','tar','gz','bz2','xz','iso'], icon: 'heroicons:archive-box' }
   ]
 })
+
+
 
 export { app }

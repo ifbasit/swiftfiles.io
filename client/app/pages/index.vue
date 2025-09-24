@@ -31,8 +31,8 @@
 </template>
 
 <script setup>
+
 import Toast from '~/components/ui/Toast.vue';
 import { app } from '~/store/app';
-
 
 </script>
