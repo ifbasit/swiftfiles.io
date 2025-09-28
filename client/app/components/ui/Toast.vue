@@ -7,7 +7,7 @@
     leave-active-class="transform ease-in duration-200"
     leave-from-class="opacity-100 translate-y-0"
     leave-to-class="opacity-0 translate-y-2"
-    @after-leave="app.clear_toast"
+    @after-leave="toast.clear_toast"
   >
     <div
       v-if="visible"
@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick, computed } from "vue"
-import { app } from "~/store/app"
+import { toast } from "~/store/toast"
 
 const props = defineProps({
   message: { type: String, required: true },

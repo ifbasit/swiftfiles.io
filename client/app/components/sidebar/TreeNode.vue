@@ -7,12 +7,12 @@
 
     <div
       class="flex items-center gap-2 w-full text-left transition-colors relative z-10"
-      :class="app.treenode.is_active(node) ? 'text-blue-500' : 'text-gray-500 dark:text-gray-400 hover:text-black dark:hover-text-gray-100'"
+      :class="sidebar.treenode.is_active(node) ? 'text-blue-500' : 'text-gray-500 dark:text-gray-400 hover:text-black dark:hover-text-gray-100'"
     >
       <!-- folder -->
       <button
         v-if="node.type === 'folder'"
-        @click="app.treenode.toggle(node)"
+        @click="sidebar.treenode.toggle(node)"
         class="flex items-center gap-2 flex-1 py-1 text-sm"
         :aria-expanded="!!node._open"
       >
@@ -21,7 +21,7 @@
           class="w-4 h-4 transition-transform duration-150"
         />
         <div class="flex items-center gap-2 truncate">
-          <Icon :name="app.treenode.icon(node)" class="w-4 h-4" />
+          <Icon :name="sidebar.treenode.icon(node)" class="w-4 h-4" />
           <span class="truncate">{{ node.name }}</span>
         </div>
 
@@ -33,14 +33,14 @@
       <!-- file -->
       <div
         v-else
-        @click="app.sidebar.set_active_path(node.path);"
+        @click="sidebar.set_active_path(node.path);"
         :class="{
-          'bg-blue-500 text-white': app.sidebar.active_path === node.path,
-          'bg-blue-100': app.sidebar.active_path && app.sidebar.active_path.startsWith(node.path + '/')
+          'bg-blue-500 text-white': sidebar.active_path === node.path,
+          'bg-blue-100': sidebar.active_path && sidebar.active_path.startsWith(node.path + '/')
         }"
       >
         <div class="flex items-center gap-2 pb-2 truncate">
-          <Icon :name="app.treenode.icon(node)" class="w-4 h-4" />
+          <Icon :name="sidebar.treenode.icon(node)" class="w-4 h-4" />
           <span class="truncate">{{ node.name }}</span>
         </div>
       </div>
@@ -60,6 +60,7 @@
 
 <script setup>
 import { app } from "~/store/app.js"
+import { sidebar } from "~/store/sidebar";
 
 defineProps({
   node: { type: Object, required: true }

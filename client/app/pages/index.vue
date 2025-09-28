@@ -18,10 +18,10 @@
       </div>
     </div>
     <Toast
-    v-if="app.toast.state"
-    :message="app.toast.message"
-    :type="app.toast.type"
-    :duration="app.toast.duration"
+    v-if="toast.state"
+    :message="toast.message"
+    :type="toast.type"
+    :duration="toast.duration"
   />
 
 
@@ -33,6 +33,7 @@
 <script setup>
 
 import Toast from '~/components/ui/Toast.vue';
-import { app } from '~/store/app';
+import { toast } from '~/store/toast';
+
 
 </script>
