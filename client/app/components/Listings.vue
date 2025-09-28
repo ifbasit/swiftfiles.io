@@ -2,7 +2,7 @@
   <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md">
     <!-- Toolbar -->
     <div class="flex items-center justify-between mb-4">
-      <div class="flex gap-2">
+      <div class="flex gap-5">
         <button v-for="btn in listings.toolbar_buttons" 
                 :key="btn.label"
                 @click="btn.action"
@@ -12,7 +12,7 @@
         </button>
       </div>
 
-      <div class="flex gap-1">
+      <div class="flex gap-3">
         <button @click="listings.view = 'list'" :class="listings.toggle_btn_class(listings.view === 'list')">
           <Icon name="heroicons:list-bullet" class="w-5 h-5" />
         </button>
